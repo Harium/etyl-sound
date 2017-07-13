@@ -16,6 +16,13 @@
           <url>http://www.gnu.org/licenses/lgpl.txt</url>
         </license>
     </licenses>
+    <dependencies>
+        <dependency>
+            <groupId>com.harium</groupId>
+            <artifactId>etyl-commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
     <scm>
         <connection>scm:git:git://github.com/harium/etyl-sound.git</connection>
         <developerConnection>scm:git:ssh://github.com:harium/etyl-sound.git</developerConnection>
