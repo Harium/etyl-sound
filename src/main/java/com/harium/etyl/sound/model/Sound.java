@@ -2,12 +2,6 @@ package com.harium.etyl.sound.model;
 
 import com.harium.etyl.sound.MultimediaLoader;
 
-/**
- * 
- * @author yuripourre
- * @license LGPLv3
- *
- */
 
 public class Sound {
 
@@ -25,5 +19,9 @@ public class Sound {
 	public void play() {
 		MultimediaLoader.getInstance().playSound(path);
 	}
+
+    public void dispose() {
+        MultimediaLoader.getInstance().dispose(path);
+    }
 		
 } 

@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 import java.lang.Boolean;
 import java.lang.reflect.InvocationTargetException;
@@ -106,7 +106,7 @@ public class SoundSystemConfig
 
 /**
  * Handle to the message logger.  The default logger can be changed by 
- * overridding the {@link sound.paulscode.SoundSystemLogger SoundSystemLogger} 
+ * overridding the {@link SoundSystemLogger SoundSystemLogger}
  * class and calling the setLogger() method (must be done BEFORE instantiating 
  * the SoundSystem class!)
  */
@@ -400,7 +400,7 @@ public class SoundSystemConfig
  * been created, there will be handles floating around to two different 
  * loggers, and the results will be undesirable.  This method can be used to 
  * change how messages are handled.  First, the 
- * {@link sound.paulscode.SoundSystemLogger SoundSystemLogger} class should be 
+ * {@link SoundSystemLogger SoundSystemLogger} class should be
  * extended and methods overriden to change how messages are handled.  Then, 
  * the overridden class should be instantiated, and a call made to 
  * SoundSystemConfig.setLogger() before creating the SoundSystem object.  

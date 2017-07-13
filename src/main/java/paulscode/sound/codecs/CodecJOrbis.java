@@ -1,4 +1,4 @@
-package sound.paulscode.codecs;
+package paulscode.sound.codecs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,10 +15,10 @@ import com.jcraft.jorbis.Block;
 import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
-import sound.paulscode.ICodec;
-import sound.paulscode.SoundBuffer;
-import sound.paulscode.SoundSystemConfig;
-import sound.paulscode.SoundSystemLogger;
+import paulscode.sound.ICodec;
+import paulscode.sound.SoundBuffer;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.SoundSystemLogger;
 
 // From the JOrbis library, http://www.jcraft.com/jorbis/
 
@@ -340,7 +340,7 @@ public class CodecJOrbis implements ICodec
 
 /**
  * Reads in one stream buffer worth of audio data.  See
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} for more
+ * {@link SoundSystemConfig SoundSystemConfig} for more
  * information about accessing and changing default settings.
  * @return The audio data wrapped into a SoundBuffer context.
  */
@@ -366,7 +366,7 @@ public class CodecJOrbis implements ICodec
 /**
  * Reads in all the audio data from the stream (up to the default
  * "maximum file size".  See
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} for more
+ * {@link SoundSystemConfig SoundSystemConfig} for more
  * information about accessing and changing default settings.
  * @return the audio data wrapped into a SoundBuffer context.
  */

@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 import java.io.IOException;
 import java.net.URL;

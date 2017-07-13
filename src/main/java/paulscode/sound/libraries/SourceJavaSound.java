@@ -1,15 +1,15 @@
-package sound.paulscode.libraries;
+package paulscode.sound.libraries;
 
 import java.util.LinkedList;
 
 import javax.sound.sampled.AudioFormat;
 
-import sound.paulscode.Channel;
-import sound.paulscode.FilenameURL;
-import sound.paulscode.ListenerData;
-import sound.paulscode.SoundBuffer;
-import sound.paulscode.SoundSystemConfig;
-import sound.paulscode.Source;
+import paulscode.sound.Channel;
+import paulscode.sound.FilenameURL;
+import paulscode.sound.ListenerData;
+import paulscode.sound.SoundBuffer;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.Source;
 
 import com.badlogic.gdx.math.Vector3;
 

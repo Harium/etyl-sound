@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 /**
  * The SoundSystemException class is used to provide information about serious

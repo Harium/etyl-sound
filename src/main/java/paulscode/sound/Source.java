@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 import java.net.URL;
 import java.util.LinkedList;

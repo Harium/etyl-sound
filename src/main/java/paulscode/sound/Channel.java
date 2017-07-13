@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 import java.util.LinkedList;
 import javax.sound.sampled.AudioFormat;
@@ -53,7 +53,7 @@ public class Channel
 /**
  * Global identifier for the type of channel (normal or streaming).  Possible 
  * values for this varriable can be found in the 
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} class.
+ * {@link SoundSystemConfig SoundSystemConfig} class.
  */
     public int channelType;
 
@@ -75,7 +75,7 @@ public class Channel
 /**
  * Constructor:  Takes channelType identifier as a paramater.  Possible values 
  * for channel type can be found in the 
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} class.
+ * {@link SoundSystemConfig SoundSystemConfig} class.
  * @param type Type of channel (normal or streaming).
  */
     public Channel( int type )
@@ -143,7 +143,7 @@ public class Channel
     }
 /**
  * Plays the next queued byte[] buffer.  This method is run from the seperate 
- * {@link sound.paulscode.StreamThread StreamThread}.
+ * {@link StreamThread StreamThread}.
  * @return False when no more buffers are left to process.
  */
     public boolean processBuffer()

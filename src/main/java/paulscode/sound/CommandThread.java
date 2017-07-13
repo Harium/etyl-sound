@@ -1,12 +1,12 @@
-package sound.paulscode;
+package paulscode.sound;
 
 /**
  * The CommandThread class is designed to move all command processing into a
  * single thread to be run in the background and avoid conflicts between
  * threads.  Commands are processed in the order that they were queued.  The
  * arguements for each command are stored in a
- * {@link sound.paulscode.CommandObject CommandObject}.  The Command Queue is
- * located in the {@link sound.paulscode.SoundSystem SoundSystem} class.
+ * {@link CommandObject CommandObject}.  The Command Queue is
+ * located in the {@link SoundSystem SoundSystem} class.
  * Calling kill() stops the thread, and this should be immediatly followed
  * by a call to interrupt() to wake up the thread so it may end.  This class
  * also checks for temporary sources that are finished playing, and removes

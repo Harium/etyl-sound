@@ -1,4 +1,4 @@
-package sound.paulscode.libraries;
+package paulscode.sound.libraries;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,10 +11,10 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
-import sound.paulscode.Channel;
-import sound.paulscode.SoundBuffer;
-import sound.paulscode.SoundSystemConfig;
-
+import paulscode.sound.Channel;
+import paulscode.sound.SoundBuffer;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.StreamThread;
 
 
 /**
@@ -129,7 +129,7 @@ public class ChannelJavaSound extends Channel
 /**
  * Constructor:  takes channelType identifier and a handle to the Mixer as 
  * paramaters.  Possible values for channel type can be found in the 
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} class.
+ * {@link SoundSystemConfig SoundSystemConfig} class.
  * @param type Type of channel (normal or streaming).
  * @param mixer Handle to the JavaSound Mixer.
  */
@@ -691,7 +691,7 @@ public class ChannelJavaSound extends Channel
  
 /**
  * Plays the next queued byte[] buffer.  This method is run from the seperate 
- * {@link sound.paulscode.StreamThread StreamThread}.
+ * {@link StreamThread StreamThread}.
  * @return False when no more buffers are left to process.
  */
     @Override

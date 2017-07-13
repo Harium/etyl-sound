@@ -13,17 +13,15 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
-public class AudioHandler {
-
+public class AudioRecorder {
 	private boolean recording = false;
-	
 	private ByteArrayOutputStream inputBuffer;
 	
-	private static AudioHandler instance = null;
+	private static AudioRecorder instance = null;
 	
-	public static AudioHandler getInstance() {
+	public static AudioRecorder getInstance() {
 		if(instance==null) {
-			instance = new AudioHandler();
+			instance = new AudioRecorder();
 		}
 
 		return instance;

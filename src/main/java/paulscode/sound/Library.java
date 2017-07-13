@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -274,7 +274,7 @@ public class Library
 /**
  * Creates a new channel of the specified type (normal or streaming).  Possible 
  * values for channel type can be found in the 
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} class.
+ * {@link SoundSystemConfig SoundSystemConfig} class.
  * @param type Type of channel.
  * @return The new channel.
  */

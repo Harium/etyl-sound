@@ -1,9 +1,9 @@
-package sound.paulscode;
+package paulscode.sound;
 
 /**
  * The CommandObject class is used to store arguments in the SoundSystem's
  * Command Queue.  Queued CommandObjects are then processed by the 
- * {@link sound.paulscode.CommandThread CommandThread}.  Commands are queued 
+ * {@link CommandThread CommandThread}.  Commands are queued
  * and executed in the background, so it is unlikely that the user will ever 
  * need to use this class.  
  *<br><br>

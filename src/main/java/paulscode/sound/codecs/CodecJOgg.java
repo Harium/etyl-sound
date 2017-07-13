@@ -1,6 +1,6 @@
-package sound.paulscode.codecs;
+package paulscode.sound.codecs;
 
-import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -8,43 +8,65 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
-import sound.paulscode.ICodec;
-import sound.paulscode.SoundBuffer;
-import sound.paulscode.SoundSystemConfig;
-import sound.paulscode.SoundSystemLogger;
+import de.jarnbjo.ogg.CachedUrlStream;
+import de.jarnbjo.ogg.EndOfOggStreamException;
+import de.jarnbjo.ogg.LogicalOggStream;
+import de.jarnbjo.vorbis.IdentificationHeader;
+import de.jarnbjo.vorbis.VorbisStream;
+import paulscode.sound.ICodec;
+import paulscode.sound.SoundBuffer;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.SoundSystemLogger;
 
+
+// From the j-ogg library, http://www.j-ogg.de
 
 
 /**
- * The CodecWav class provides an ICodec interface for reading from .wav files.
- *<br><br>
- *<b><i>   SoundSystem CodecWav License:</b></i><br><b><br>
+ * The CodecJOgg class provides an ICodec interface to the external J-Ogg
+ * library.
+ *<b><br><br>
+ *    This software is based on or using the J-Ogg library available from
+ *    http://www.j-ogg.de and copyrighted by Tor-Einar Jarnbjo.
+ *</b><br><br>
+ *<b><i>    J-Ogg License:</b></i>
+ *<br><i>
+ * You are free to use, modify, resdistribute or include this software in your
+ * own free or commercial software. The only restriction is, that you make it
+ * obvious that your software is based on J-Ogg by including this notice in the
+ * documentation, about box or whereever you feel apropriate:
+ *<br>
+ * "This software is based on or using the J-Ogg library available from
+ * http://www.j-ogg.de and copyrighted by Tor-Einar Jarnbjo."
+ * <br><br><br></i>
+ *<b><i>    SoundSystem CodecJOgg License:</b></i><br>
+ *<b><br>
  *    You are free to use this class for any purpose, commercial or otherwise.
  *    You may modify this class or source code, and distribute it any way you
  *    like, provided the following conditions are met:
  *<br>
- *    1) You may not falsely claim to be the author of this class or any
+ *    1) You must abide by the conditions of the aforementioned J-Ogg License.
+ *<br>
+ *    2) You may not falsely claim to be the author of this class or any
  *    unmodified portion of it.
  *<br>
- *    2) You may not copyright this class or a modified version of it and then
+ *    3) You may not copyright this class or a modified version of it and then
  *    sue me for copyright infringement.
  *<br>
- *    3) If you modify the source code, you must clearly document the changes
+ *    4) If you modify the source code, you must clearly document the changes
  *    made before redistributing the modified source code, so other users know
  *    it is not the original code.
  *<br>
- *    4) You are not required to give me credit for this class in any derived
+ *    5) You are not required to give me credit for this class in any derived
  *    work, but if you do, you must also mention my website:
  *    http://www.paulscode.com
  *<br>
- *    5) I the author will not be responsible for any damages (physical,
+ *    6) I the author will not be responsible for any damages (physical,
  *    financial, or otherwise) caused by the use if this class or any portion
  *    of it.
  *<br>
- *    6) I the author do not guarantee, warrant, or make any representations,
+ *    7) I the author do not guarantee, warrant, or make any representations,
  *    either expressed or implied, regarding the use of this class or any
  *    portion of it.
  * <br><br>
@@ -53,7 +75,7 @@ import sound.paulscode.SoundSystemLogger;
  *    http://www.paulscode.com
  * </b>
  */
-public class CodecWav implements ICodec
+public class CodecJOgg implements ICodec
 {
 /**
  * Used to return a current value from one of the synchronized
@@ -83,16 +105,45 @@ public class CodecWav implements ICodec
     private boolean initialized = false;
 
 /**
+ * True if the using library requires data read by this codec to be
+ * reverse-ordered before returning it from methods read() and readAll().
+ */
+    private boolean reverseBytes = false;
+
+/**
+ * Cached URL stream, used for reading .ogg files.
+ */
+    private CachedUrlStream cachedUrlStream = null;
+
+/**
+ * Logical Ogg stream, used for reading .ogg files.
+ */
+    private LogicalOggStream myLogicalOggStream = null;
+
+/**
+ * Vorbis stream, used for reading .ogg files.
+ */
+    private VorbisStream myVorbisStream = null;
+
+/**
+ * Ogg Input stream, used for reading .ogg files.
+ */
+    private OggInputStream myOggInputStream = null;
+
+/**
+ * Identification Header, provides information about a .ogg file.
+ */
+    private IdentificationHeader myIdentificationHeader = null;
+
+/**
+ * Audio format to use when playing back the wave data.
+ */
+    private AudioFormat myAudioFormat = null;
+
+/**
  * Input stream to use for reading in pcm data.
  */
     private AudioInputStream myAudioInputStream = null;
-
-/**
- * This method is ignored by CodecWav, because it produces "nice" data.
- * @param b True if the calling audio library requires byte-reversal from certain codecs
- */
-    public void reverseByteOrder( boolean b )
-    {}
 
 /**
  * Processes status messages, warnings, and error messages.
@@ -102,22 +153,36 @@ public class CodecWav implements ICodec
 /**
  * Constructor:  Grabs a handle to the logger.
  */
-    public CodecWav()
+    public CodecJOgg()
     {
         logger = SoundSystemConfig.getLogger();
     }
 
 /**
+ * Tells this codec when it will need to reverse the byte order of
+ * the data before returning it in the read() and readAll() methods.  The
+ * J-Ogg library produces audio data in a format that some external audio
+ * libraries require to be reversed.  Derivatives of the Library and Source
+ * classes for audio libraries which require this type of data to be reversed
+ * will call the reverseByteOrder() method.
+ * @param b True if the calling audio library requires byte-reversal.
+ */
+    public void reverseByteOrder( boolean b )
+    {
+        reverseBytes = b;
+    }
+
+/**
  * Prepares an audio stream to read from.  If another stream is already opened,
  * it will be closed and a new audio stream opened in its place.
- * @param url URL to an audio file to stream from.
+ * @param url URL to an ogg file to stream from.
  * @return False if an error occurred or if end of stream was reached.
  */
     public boolean initialize( URL url )
     {
         initialized( SET, false );
         cleanup();
-        
+
         if( url == null )
         {
             errorMessage( "url null in method 'initialize'" );
@@ -127,20 +192,44 @@ public class CodecWav implements ICodec
 
         try
         {
-            myAudioInputStream = AudioSystem.getAudioInputStream(
-                                  new BufferedInputStream( url.openStream() ) );
+            // Create all the streams:
+            cachedUrlStream = new CachedUrlStream( url );
+            myLogicalOggStream = (LogicalOggStream)
+                  cachedUrlStream.getLogicalStreams().iterator().next();
+            myVorbisStream = new VorbisStream( myLogicalOggStream );
+            myOggInputStream = new OggInputStream( myVorbisStream );
+
+            // Get the header information about the ogg file:
+            myIdentificationHeader =
+                               myVorbisStream.getIdentificationHeader();
+
+            // Set up the audio format to use during playback:
+            myAudioFormat = new AudioFormat(
+                    AudioFormat.Encoding.PCM_SIGNED,
+                    (float) myIdentificationHeader.getSampleRate(),
+                    16,
+                    myIdentificationHeader.getChannels(),
+                    myIdentificationHeader.getChannels() * 2,
+                    (float) myIdentificationHeader.getSampleRate(),
+                    true );
+
+            // Create the actual audio input stream:
+            myAudioInputStream = new AudioInputStream( myOggInputStream,
+                                                    myAudioFormat, -1 );
         }
-        catch( UnsupportedAudioFileException uafe )
+        catch( Exception e )
         {
-            errorMessage( "Unsupported audio format in method 'initialize'" );
-            printStackTrace( uafe );
+            errorMessage( "Unable to set up input streams in method " +
+                          "'initialize'" );
+            printStackTrace( e );
+            cleanup();
             return false;
         }
-        catch( IOException ioe )
+        if( myAudioInputStream == null )
         {
-            errorMessage( "Error setting up audio input stream in method " +
+            errorMessage( "Unable to set up audio input stream in method " +
                           "'initialize'" );
-            printStackTrace( ioe );
+            cleanup();
             return false;
         }
 
@@ -160,14 +249,17 @@ public class CodecWav implements ICodec
 
 /**
  * Reads in one stream buffer worth of audio data.  See
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} for more
+ * {@link SoundSystemConfig SoundSystemConfig} for more
  * information about accessing and changing default settings.
  * @return The audio data wrapped into a SoundBuffer context.
  */
     public SoundBuffer read()
     {
         if( myAudioInputStream == null )
+        {
+            endOfStream( SET, true );
             return null;
+        }
 
         // Get the format for the audio data:
         AudioFormat audioFormat = myAudioInputStream.getFormat();
@@ -176,6 +268,7 @@ public class CodecWav implements ICodec
         if( audioFormat == null )
         {
             errorMessage( "Audio Format null in method 'read'" );
+            endOfStream( SET, true );
             return null;
         }
 
@@ -205,14 +298,26 @@ public class CodecWav implements ICodec
         }
         catch( IOException ioe )
         {
-// TODO: See if setting endOfStream is needed here
+/*
+            errorMessage( "Exception thrown while reading from the " +
+                          "AudioInputStream (location #3)." );
+            printStackTrace( e );
+            return null;
+ */  // TODO: Figure out why this exception is being thrown at end of OGG files!
             endOfStream( SET, true );
             return null;
         }
 
         // Return null if no data was read:
         if( bytesRead <= 0 )
+        {
+            endOfStream( SET, true );
             return null;
+        }
+
+        // Reverse the byte order if necessary (required for some .ogg files):
+        if( reverseBytes )
+            reverseBytes( streamBuffer, 0, bytesRead );
 
         // If we didn't fill the stream buffer entirely, trim it down to size:
         if( bytesRead < streamBuffer.length )
@@ -233,20 +338,12 @@ public class CodecWav implements ICodec
 /**
  * Reads in all the audio data from the stream (up to the default
  * "maximum file size".  See
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} for more
+ * {@link SoundSystemConfig SoundSystemConfig} for more
  * information about accessing and changing default settings.
  * @return the audio data wrapped into a SoundBuffer context.
  */
     public SoundBuffer readAll()
     {
-        // Check to make sure there is an audio format:
-        if( myAudioInputStream == null )
-        {
-            errorMessage( "Audio input stream null in method 'readAll'" );
-            return null;
-        }
-        AudioFormat myAudioFormat = myAudioInputStream.getFormat();
-
         // Check to make sure there is an audio format:
         if( myAudioFormat == null )
         {
@@ -329,6 +426,10 @@ public class CodecWav implements ICodec
                     return null;
                 }
 
+                // Reverse byte order if necessary:
+                if( reverseBytes )
+                    reverseBytes( smallBuffer, 0, bytesRead );
+
                 // Keep track of the total number of bytes read:
                 totalBytes += bytesRead;
 
@@ -371,13 +472,37 @@ public class CodecWav implements ICodec
  */
     public void cleanup()
     {
+        if( myLogicalOggStream != null )
+            try
+            {
+                myLogicalOggStream.close();
+            }
+            catch( Exception e )
+            {}
+        if( myVorbisStream != null )
+            try
+            {
+                myVorbisStream.close();
+            }
+            catch( Exception e )
+            {}
+        if( myOggInputStream != null )
+            try
+            {
+                myOggInputStream.close();
+            }
+            catch( Exception e )
+            {}
         if( myAudioInputStream != null )
-        try
-        {
-            myAudioInputStream.close();
-        }
-        catch( Exception e )
-        {}
+            try
+            {
+                myAudioInputStream.close();
+            }
+            catch( Exception e )
+            {}
+        myLogicalOggStream = null;
+        myVorbisStream = null;
+        myOggInputStream = null;
         myAudioInputStream = null;
     }
 
@@ -388,9 +513,7 @@ public class CodecWav implements ICodec
  */
     public AudioFormat getAudioFormat()
     {
-        if( myAudioInputStream == null )
-            return null;
-        return myAudioInputStream.getFormat();
+        return myAudioFormat;
     }
 
 /**
@@ -432,7 +555,8 @@ public class CodecWav implements ICodec
         if( array != null && array.length > maxLength )
         {
             trimmedArray = new byte[maxLength];
-            System.arraycopy( array, 0, trimmedArray, 0, maxLength );
+            System.arraycopy( array, 0, trimmedArray, 0,
+                              maxLength );
         }
         return trimmedArray;
     }
@@ -529,12 +653,104 @@ public class CodecWav implements ICodec
     }
 
 /**
+ * Reverse-orders all bytes contained in the specified array.
+ * @param buffer Array containing audio data.
+ */
+    public static void reverseBytes( byte[] buffer )
+    {
+        reverseBytes( buffer, 0, buffer.length );
+    }
+
+/**
+ * Reverse-orders the specified range of bytes contained in the specified array.
+ * @param buffer Array containing audio data.
+ * @param offset Array index to begin.
+ * @param size number of bytes to reverse-order.
+ */
+    public static void reverseBytes( byte[] buffer, int offset, int size )
+    {
+
+        byte b;
+        for( int i = offset; i < ( offset + size ); i += 2 )
+        {
+            b = buffer[i];
+            buffer[i] = buffer[i + 1];
+            buffer[i + 1] = b;
+        }
+    }
+
+    /**
+    * The OggInputStream class provides an InputStream interface for reading
+    * from a .ogg file.
+    */
+    private class OggInputStream extends InputStream
+    {
+    /**
+    * The VorbisStream to read from.
+    */
+        private VorbisStream myVorbisStream;
+
+    /**
+    * Constructor: Use the specified VorbisStream.
+    * @param source VorbisStream for the ogg file to read from.
+    */
+        public OggInputStream( VorbisStream source )
+        {
+            myVorbisStream = source;
+        }
+
+    /**
+    * Implements the InputStream.read() method.  Reads the next byte of data from
+    * the input stream.
+    * @return The next byte of data, or -1 if EOS.
+    */
+        public int read() throws IOException
+        {
+            return 0;
+        }
+
+    /**
+    * Overrides the InputStream.read( byte[] ) method.  Reads some number of
+    * bytes from the input stream and stores them into the buffer array.
+    * @param buffer Where to put the read-in data.
+    * @return The total number of bytes read into the buffer, or -1 if EOS.
+    */
+        @Override
+        public int read( byte[] buffer ) throws IOException
+        {
+            return read( buffer, 0, buffer.length );
+        }
+
+    /**
+    * Overrides the InputStream.read( byte[], int, int ) method.  Reads up to
+    * length bytes of data from the input stream into an array of bytes.
+    * @param buffer Where to put the read-in data.
+    * @param offset Position within buffer to place the data.
+    * @param length How much data to read in.
+    * @return The total number of bytes read into the buffer, or -1 if EOS.
+    */
+        @Override
+        public int read( byte[] buffer, int offset, int length ) throws IOException
+        {
+            try
+            {
+                return myVorbisStream.readPcm( buffer, offset, length );
+            }
+            catch( EndOfOggStreamException e )
+            {
+                // no more data left
+                return -1;
+            }
+        }
+    }
+
+/**
  * Prints an error message.
  * @param message Message to print.
  */
     private void errorMessage( String message )
     {
-        logger.errorMessage( "CodecWav", message, 0 );
+        logger.errorMessage( "CodecJOgg", message, 0 );
     }
 
 /**

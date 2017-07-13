@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 /**
  * The SoundSystemLogger class handles all status messages, warnings, and error 
@@ -9,7 +9,7 @@ package sound.paulscode;
  * the setLogger() method is called after the SoundSystem has been created, 
  * there will be handles floating around to two different message loggers, and 
  * the results will be undesirable.  
- * See {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} for more 
+ * See {@link SoundSystemConfig SoundSystemConfig} for more
  * information about changing default settings.  If an alternate logger is not 
  * set by the user, then an instance of this base class will be automatically
  * created by default when the SoundSystem class is instantiated.

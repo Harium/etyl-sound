@@ -1,4 +1,4 @@
-package sound.paulscode.codecs;
+package paulscode.sound.codecs;
 
 /*
  * CodecJLayerMP3 - an ICodec interface for Paulscode Sound System
@@ -28,10 +28,10 @@ import javazoom.jl.decoder.Decoder;
 import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.Obuffer;
 import javazoom.jl.mp3spi.DecodedMpegAudioInputStream;
-import sound.paulscode.ICodec;
-import sound.paulscode.SoundBuffer;
-import sound.paulscode.SoundSystemConfig;
-import sound.paulscode.SoundSystemLogger;
+import paulscode.sound.ICodec;
+import paulscode.sound.SoundBuffer;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.SoundSystemLogger;
 
 
 

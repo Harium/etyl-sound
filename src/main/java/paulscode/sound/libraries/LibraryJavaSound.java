@@ -1,4 +1,4 @@
-package sound.paulscode.libraries;
+package paulscode.sound.libraries;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -8,15 +8,15 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
-import sound.paulscode.Channel;
-import sound.paulscode.FilenameURL;
-import sound.paulscode.ICodec;
-import sound.paulscode.Library;
-import sound.paulscode.SoundBuffer;
-import sound.paulscode.SoundSystem;
-import sound.paulscode.SoundSystemConfig;
-import sound.paulscode.SoundSystemException;
-import sound.paulscode.Source;
+import paulscode.sound.Channel;
+import paulscode.sound.FilenameURL;
+import paulscode.sound.ICodec;
+import paulscode.sound.Library;
+import paulscode.sound.SoundBuffer;
+import paulscode.sound.SoundSystem;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.SoundSystemException;
+import paulscode.sound.Source;
 
 
 import java.net.URL;
@@ -243,7 +243,7 @@ public class LibraryJavaSound extends Library
 /**
  * Creates a new channel of the specified type (normal or streaming).  Possible 
  * values for channel type can be found in the 
- * {@link sound.paulscode.SoundSystemConfig SoundSystemConfig} class.
+ * {@link SoundSystemConfig SoundSystemConfig} class.
  * @param type Type of channel.
  */
     @Override

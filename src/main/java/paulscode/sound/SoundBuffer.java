@@ -1,4 +1,4 @@
-package sound.paulscode;
+package paulscode.sound;
 
 import javax.sound.sampled.AudioFormat;
 
