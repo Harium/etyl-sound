@@ -98,4 +98,8 @@ public class MultimediaLoader extends LoaderImpl {
         }
         stop(path);
     }
+
+    public boolean canLoad(String extension) {
+        return SoundSystemConfig.getCodec(extension) != null;
+    }
 }

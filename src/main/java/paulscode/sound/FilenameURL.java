@@ -1,9 +1,9 @@
 package paulscode.sound;
 
+import com.harium.etyl.util.io.IOHelper;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import br.com.etyllica.util.io.IOHelper;
 
 /**
  * The FilenameURL class is designed to associate a String filename/identifier
