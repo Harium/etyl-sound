@@ -1,4 +1,4 @@
-# Etyl Sound
+# Etyl Sound [![Build Status](https://travis-ci.org/Harium/etyl-sound.svg?branch=master)](https://travis-ci.org/Harium/etyl-sound)
 
 It is the Etyl's default sound module
 
