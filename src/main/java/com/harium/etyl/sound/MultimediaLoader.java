@@ -45,13 +45,15 @@ public class MultimediaLoader extends LoaderImpl {
         }
     }
 
-    public void setSoundLibrary(Class<? extends Library> library) {
+    public SoundSystem setSoundLibrary(Class<? extends Library> library) {
         try {
             soundSystem = new SoundSystem(library);
         } catch (SoundSystemException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        return soundSystem;
     }
 
     public boolean isPlaying(String path) {
