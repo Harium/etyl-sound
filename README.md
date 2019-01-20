@@ -11,7 +11,7 @@ It also includes [JavaZOOM](www.javazoom.net/mp3spi/mp3spi.html) and [JOrbis](ht
 <dependency>
     <groupId>com.harium.etyl</groupId>
     <artifactId>sound</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
