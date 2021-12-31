@@ -1,7 +1,7 @@
 package com.harium.etyl.sound;
 
 
-import com.harium.etyl.loader.LoaderImpl;
+import com.harium.etyl.commons.loader.LoaderImpl;
 import paulscode.sound.Library;
 import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
